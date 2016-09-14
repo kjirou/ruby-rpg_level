@@ -14,6 +14,10 @@ describe RpgLevel do
   end
 
   describe '#generate_necessary_exps' do
+    it 'should raise a ArgumentError unless block is not given' do
+      expect {rpg_level.send(:generate_necessary_exps)}.to raise_error ArgumentError
+    end
+
     it 'default args' do
       necessary_exps = rpg_level.send(:generate_necessary_exps) {|level:, **kwargs| level}
       expect(necessary_exps.size).to be 99

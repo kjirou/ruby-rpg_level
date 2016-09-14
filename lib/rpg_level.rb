@@ -8,8 +8,9 @@ class RpgLevel
 
   private
 
-  # TODO: How to define block requirement?
   def generate_necessary_exps(start_level: 1, max_level: 99)
+    raise ArgumentError unless block_given?
+
     exps = []
     memo = {}
 
