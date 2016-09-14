@@ -15,8 +15,7 @@ describe RpgLevel do
 
   describe '#generate_necessary_exps' do
     it 'default args' do
-      # TODO: How to destruct the `data` hash?
-      necessary_exps = rpg_level.send(:generate_necessary_exps) {|data| data[:level]}
+      necessary_exps = rpg_level.send(:generate_necessary_exps) {|level:, **kwargs| level}
       expect(necessary_exps.size).to be 99
       expect(necessary_exps.inject(:+)).to be((2..99).inject(:+))
     end
