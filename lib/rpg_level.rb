@@ -8,7 +8,7 @@ class RpgLevel
 
   private
 
-  def generate_necessary_exps(start_level: 1, max_level: 99, &block)
+  def generate_necessary_exps(start_level, max_level, &block)
     raise ArgumentError unless block_given?
 
     exps = []
