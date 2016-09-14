@@ -18,7 +18,7 @@ describe RpgLevel do
       expect {rpg_level.send(:generate_necessary_exps)}.to raise_error ArgumentError
     end
 
-    it 'should specify start_level and max_level' do
+    it 'can specify start_level and max_level' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, start_level: 2, max_level: 5) {|level:, **rest| level}
       expect(necessary_exps.size).to be 5
       expect(necessary_exps.inject(:+)).to be(3 + 4 + 5)
@@ -30,14 +30,14 @@ describe RpgLevel do
       expect(necessary_exps.inject(:+)).to be((2..99).inject(:+))
     end
 
-    it 'should refer :min_level, :start_level and :max_level in the block' do
+    it 'can refer :min_level, :start_level and :max_level in the block' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, start_level: 2, max_level: 3) do |data|
         data[:min_level] * data[:start_level] * data[:max_level]
       end
       expect(necessary_exps.last).to be(1 * 2 * 3)
     end
 
-    it 'should use :exps in the block' do
+    it 'can use :exps in the block' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, max_level: 5) do |level:, exps:, **rest|
         level - 1 + exps.inject(:+)
       end
@@ -47,7 +47,7 @@ describe RpgLevel do
       expect(necessary_exps[4]).to be(4 + (3 + (2 + 1) + 1) + (2 + 1) + 1)
     end
 
-    it 'should use :memo in the block' do
+    it 'can use :memo in the block' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, max_level: 3) do |level:, memo:, **rest|
         if level == 2 then
           memo[:tmp] = 5
