@@ -53,4 +53,22 @@ describe RpgLevel do
       expect(necessary_exps[2]).to be(5 * 2)
     end
   end
+
+  describe '#define_exp_table' do
+    let (:rpg_level) {
+      RpgLevel.new
+    }
+
+    it 'should raise a ArgumentError unless block is given' do
+      expect {rpg_level.send(:generate_necessary_exps)}.to raise_error ArgumentError
+    end
+
+    it 'has default args' do
+      rpg_level.define_exp_table {|level:, **rest| level}
+      expect(rpg_level.necessary_exps.size).to be 99
+      expect(rpg_level.necessary_exps[0]).to be 0
+      expect(rpg_level.necessary_exps[1]).to be 2
+      expect(rpg_level.necessary_exps[98]).to be 99
+    end
+  end
 end
