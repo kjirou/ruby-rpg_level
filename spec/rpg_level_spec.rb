@@ -14,10 +14,6 @@ describe RpgLevel do
       RpgLevel.new
     }
 
-    it 'should raise a ArgumentError unless block is given' do
-      expect {rpg_level.send(:generate_necessary_exps)}.to raise_error ArgumentError
-    end
-
     it 'can specify start_level and max_level' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, 2, 5) {|level:, **rest| level}
       expect(necessary_exps.size).to be 5
