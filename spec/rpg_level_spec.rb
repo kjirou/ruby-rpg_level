@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 describe RpgLevel do
-  let (:rpg_level) {
-    RpgLevel.new
-  }
-
   it 'has a version number' do
     expect(RpgLevel::VERSION).not_to be nil
   end
@@ -14,6 +10,10 @@ describe RpgLevel do
   end
 
   describe '#generate_necessary_exps' do
+    let (:rpg_level) {
+      RpgLevel.new
+    }
+
     it 'should raise a ArgumentError unless block is given' do
       expect {rpg_level.send(:generate_necessary_exps)}.to raise_error ArgumentError
     end
