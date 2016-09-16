@@ -66,5 +66,35 @@ describe RpgLevel do
       expect(rpg_level.necessary_exps[1]).to be 2
       expect(rpg_level.necessary_exps[98]).to be 99
     end
+
+    it 'can specify :start_level and :max_level' do
+      rpg_level.define_exp_table(start_level: 2, max_level: 4) {|level:, **rest| level}
+      expect(rpg_level.necessary_exps.size).to be 4
+      expect(rpg_level.necessary_exps[1]).to be 0
+      expect(rpg_level.necessary_exps[2]).to be 3
+      expect(rpg_level.necessary_exps[3]).to be 4
+    end
+  end
+
+  describe '#min_level' do
+    let (:rpg_level) {
+      RpgLevel.new
+    }
+
+    it do
+      rpg_level.define_exp_table {|level:, **rest| level}
+      expect(rpg_level.min_level).to eq 1
+    end
+  end
+
+  describe '#max_level' do
+    let (:rpg_level) {
+      RpgLevel.new
+    }
+
+    it do
+      rpg_level.define_exp_table(max_level: 5) {|level:, **rest| level}
+      expect(rpg_level.max_level).to eq 5
+    end
   end
 end

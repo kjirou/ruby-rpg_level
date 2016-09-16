@@ -2,7 +2,7 @@ require 'rpg_level/version'
 
 
 class RpgLevel
-  attr_reader(:necessary_exps)
+  attr_reader(:min_level, :necessary_exps)
 
   def initialize
     @min_level = 1
@@ -12,6 +12,10 @@ class RpgLevel
   def define_exp_table(start_level: 1, max_level: 99)
     raise ArgumentError unless block_given?
     @necessary_exps = generate_necessary_exps(start_level, max_level) {|data| yield(data)}
+  end
+
+  def max_level
+    @necessary_exps.length
   end
 
   private
