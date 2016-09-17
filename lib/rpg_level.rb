@@ -1,6 +1,5 @@
 require 'rpg_level/version'
 
-
 class RpgLevel
   attr_reader(:min_level, :necessary_exps)
 
@@ -18,7 +17,7 @@ class RpgLevel
 
   def define_exp_table(max_level)
     raise ArgumentError unless block_given?
-    # TODO: to &block
+    # TODO: How to convert the block to a proc?
     necessary_exps = generate_necessary_exps(max_level) {|info| yield(info)}
     define_exp_table_from_array(necessary_exps)
   end
