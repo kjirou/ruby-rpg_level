@@ -90,6 +90,15 @@ describe RpgLevel do
     end
   end
 
+  describe '#exp' do
+    it 'should be' do
+      rpg_level = RpgLevel.new
+      expect(rpg_level.exp).to eq 0
+      rpg_level.instance_variable_set(:@exp, 1)
+      expect(rpg_level.exp).to eq 1
+    end
+  end
+
   describe '#max_level' do
     it 'should be' do
       rpg_level = RpgLevel.new

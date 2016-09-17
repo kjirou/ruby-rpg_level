@@ -1,11 +1,11 @@
 require 'rpg_level/version'
 
 class RpgLevel
-  attr_reader(:min_level, :necessary_exps)
+  attr_reader(:exp, :min_level, :necessary_exps)
 
   def initialize(min_level: 1)
+    @exp = 0
     @min_level = min_level
-
     # Necessary exps from the @min_level
     @necessary_exps = []
   end
@@ -28,6 +28,7 @@ class RpgLevel
   end
 
   def find_necessary_exp_by_level(level)
+    # TODO: error raising to nil
     raise ArgumentError.new('level is out of range') unless level.between?(@min_level, max_level)
     return 0 if level == @min_level
     @necessary_exps[level - @min_level - 1]
