@@ -25,7 +25,7 @@ class RpgLevel
   def generate_necessary_exps(max_level)
     raise ArgumentError 'max_level less than min_level' if max_level < @min_level
 
-    exps = []
+    generated_exps = []
     memo = {}
 
     ((@min_level + 1)..max_level).map do |level|
@@ -33,10 +33,10 @@ class RpgLevel
         level: level,
         min_level: @min_level,
         max_level: max_level,
-        exps: exps,
+        generated_exps: generated_exps,
         memo: memo
       })
-      exps << exp
+      generated_exps << exp
       exp
     end
   end

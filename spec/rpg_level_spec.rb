@@ -29,8 +29,8 @@ describe RpgLevel do
     end
 
     it 'can use the :exps in the block' do
-      necessary_exps = rpg_level.send(:generate_necessary_exps, 5) do |level:, exps:, **rest|
-        level - 1 + exps.inject(0, :+)
+      necessary_exps = rpg_level.send(:generate_necessary_exps, 5) do |level:, generated_exps:, **rest|
+        level - 1 + generated_exps.inject(0, :+)
       end
       expect(necessary_exps[0]).to eq(1)
       expect(necessary_exps[1]).to eq(2 + 1)
