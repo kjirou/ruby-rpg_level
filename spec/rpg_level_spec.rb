@@ -55,31 +55,31 @@ describe RpgLevel do
     end
   end
 
-  #describe '#define_exp_table' do
-  #  let (:rpg_level) {
-  #    RpgLevel.new
-  #  }
+  describe '#define_exp_table_from_array' do
+    it 'should be' do
+      rpg_level = RpgLevel.new
+      rpg_level.define_exp_table_from_array([1, 2, 3])
+      expect(rpg_level.necessary_exps.length).to eq 3
+      expect(rpg_level.necessary_exps.frozen?).to eq true
+    end
+  end
 
-  #  it 'should raise a ArgumentError unless block is given' do
-  #    expect {rpg_level.send(:generate_necessary_exps)}.to raise_error ArgumentError
-  #  end
+  describe '#define_exp_table' do
+    let (:rpg_level) {
+      RpgLevel.new
+    }
 
-  #  it 'has default args' do
-  #    rpg_level.define_exp_table {|level:, **rest| level}
-  #    expect(rpg_level.necessary_exps.size).to be 99
-  #    expect(rpg_level.necessary_exps[0]).to be 0
-  #    expect(rpg_level.necessary_exps[1]).to be 2
-  #    expect(rpg_level.necessary_exps[98]).to be 99
-  #  end
+    it 'should raise a ArgumentError if block is not given' do
+      expect {rpg_level.define_exp_table(1)}.to raise_error ArgumentError
+    end
 
-  #  it 'can specify :start_level and :max_level' do
-  #    rpg_level.define_exp_table(start_level: 2, max_level: 4) {|level:, **rest| level}
-  #    expect(rpg_level.necessary_exps.size).to be 4
-  #    expect(rpg_level.necessary_exps[1]).to be 0
-  #    expect(rpg_level.necessary_exps[2]).to be 3
-  #    expect(rpg_level.necessary_exps[3]).to be 4
-  #  end
-  #end
+    it 'should be' do
+      rpg_level.define_exp_table(3) {|level:, **rest| level}
+      expect(rpg_level.necessary_exps.size).to be 2
+      expect(rpg_level.necessary_exps[0]).to be 2
+      expect(rpg_level.necessary_exps[1]).to be 3
+    end
+  end
 
   #describe '#min_level' do
   #  let (:rpg_level) {

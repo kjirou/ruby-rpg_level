@@ -11,10 +11,17 @@ class RpgLevel
     @necessary_exps = []
   end
 
-  #def define_exp_table(start_level: 1, max_level: 99)
-  #  raise ArgumentError unless block_given?
-  #  @necessary_exps = generate_necessary_exps(start_level, max_level) {|data| yield(data)}
-  #end
+  def define_exp_table_from_array(necessary_exps)
+    @necessary_exps = necessary_exps
+    @necessary_exps.freeze
+  end
+
+  def define_exp_table(max_level)
+    raise ArgumentError unless block_given?
+    # TODO: to &block
+    necessary_exps = generate_necessary_exps(max_level) {|info| yield(info)}
+    define_exp_table_from_array(necessary_exps)
+  end
 
   def max_level
     @min_level + @necessary_exps.length
