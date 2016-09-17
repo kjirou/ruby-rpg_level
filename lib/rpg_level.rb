@@ -7,7 +7,7 @@ class RpgLevel
   def initialize
     @min_level = 1
 
-    # Necessary exps from the MIN_LEVEL
+    # Necessary exps from the @min_level
     @necessary_exps = []
   end
 
