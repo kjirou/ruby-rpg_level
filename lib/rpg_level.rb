@@ -16,6 +16,7 @@ class RpgLevel
   end
 
   def define_exp_table(max_level)
+    raise ArgumentError.new('max_level is less than min_level') if max_level < @min_level
     raise ArgumentError unless block_given?
     # TODO: How to convert the block to a proc?
     necessary_exps = generate_necessary_exps(max_level) {|info| yield(info)}
@@ -35,9 +36,6 @@ class RpgLevel
   private
 
   def generate_necessary_exps(max_level)
-    # TODO: Move to #define_exp_table
-    raise ArgumentError.new('max_level is less than min_level') if max_level < @min_level
-
     generated_exps = []
     memo = {}
 

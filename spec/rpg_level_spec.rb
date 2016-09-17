@@ -23,10 +23,6 @@ describe RpgLevel do
       expect(necessary_exps.inject(:+)).to eq(2 + 3)
     end
 
-    it 'should raise a ArgumentError if the max_level is less than the min_level' do
-      expect {rpg_level.send(:generate_necessary_exps, 0)}.to raise_error ArgumentError
-    end
-
     it 'can refer :min_level and :max_level in the block' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, 3) do |data|
         data[:min_level] + data[:max_level] * 2
@@ -70,6 +66,10 @@ describe RpgLevel do
     let (:rpg_level) {
       RpgLevel.new
     }
+
+    it 'should raise a ArgumentError if the max_level is less than the min_level' do
+      expect {rpg_level.define_exp_table(0)}.to raise_error ArgumentError
+    end
 
     it 'should raise a ArgumentError if block is not given' do
       expect {rpg_level.define_exp_table(1)}.to raise_error ArgumentError
