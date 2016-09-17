@@ -28,8 +28,7 @@ class RpgLevel
   end
 
   def find_necessary_exp_by_level(level)
-    # TODO: error raising to nil
-    raise ArgumentError.new('level is out of range') unless level.between?(@min_level, max_level)
+    return nil unless level.between?(@min_level, max_level)
     return 0 if level == @min_level
     @necessary_exps[level - @min_level - 1]
   end

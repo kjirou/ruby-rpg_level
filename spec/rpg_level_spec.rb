@@ -117,11 +117,11 @@ describe RpgLevel do
     it 'should be' do
       rpg_level = RpgLevel.new(min_level: 5)
       rpg_level.define_exp_table_from_array([1, 2])
+      expect(rpg_level.find_necessary_exp_by_level(4)).to eq nil
       expect(rpg_level.find_necessary_exp_by_level(5)).to eq 0
       expect(rpg_level.find_necessary_exp_by_level(6)).to eq 1
       expect(rpg_level.find_necessary_exp_by_level(7)).to eq 2
-      expect {rpg_level.find_necessary_exp_by_level(4)}.to raise_error ArgumentError
-      expect {rpg_level.find_necessary_exp_by_level(8)}.to raise_error ArgumentError
+      expect(rpg_level.find_necessary_exp_by_level(8)).to eq nil
     end
   end
 end
