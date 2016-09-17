@@ -21,11 +21,11 @@ describe RpgLevel do
       expect(necessary_exps.inject(:+)).to eq(2 + 3)
     end
 
-    it 'can refer the :max_level in the block' do
+    it 'can refer :min_level and :max_level in the block' do
       necessary_exps = rpg_level.send(:generate_necessary_exps, 3) do |data|
-        data[:max_level]
+        data[:min_level] + data[:max_level] * 2
       end
-      expect(necessary_exps.last).to eq 3
+      expect(necessary_exps.last).to eq(1 + 3 * 2)
     end
 
     it 'can use the :exps in the block' do
