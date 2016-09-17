@@ -81,6 +81,14 @@ describe RpgLevel do
     end
   end
 
+  describe '#max_level' do
+    it 'should be' do
+      rpg_level = RpgLevel.new
+      rpg_level.define_exp_table(5) {|level:, **rest| level}
+      expect(rpg_level.max_level).to eq 5
+    end
+  end
+
   #describe '#min_level' do
   #  let (:rpg_level) {
   #    RpgLevel.new
@@ -89,17 +97,6 @@ describe RpgLevel do
   #  it 'should be' do
   #    rpg_level.define_exp_table {|level:, **rest| level}
   #    expect(rpg_level.min_level).to eq 1
-  #  end
-  #end
-
-  #describe '#max_level' do
-  #  let (:rpg_level) {
-  #    RpgLevel.new
-  #  }
-
-  #  it 'should be' do
-  #    rpg_level.define_exp_table(max_level: 5) {|level:, **rest| level}
-  #    expect(rpg_level.max_level).to eq 5
   #  end
   #end
 end
