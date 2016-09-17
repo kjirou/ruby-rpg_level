@@ -26,9 +26,16 @@ class RpgLevel
     @min_level + @necessary_exps.length
   end
 
+  def find_necessary_exp_by_level(level)
+    raise ArgumentError.new('level is out of range') unless level.between?(@min_level, max_level)
+    return 0 if level == @min_level
+    @necessary_exps[level - @min_level - 1]
+  end
+
   private
 
   def generate_necessary_exps(max_level)
+    # TODO: Move to #define_exp_table
     raise ArgumentError.new('max_level is less than min_level') if max_level < @min_level
 
     generated_exps = []
