@@ -6,8 +6,10 @@ describe RpgLevel do
     expect(RpgLevel::VERSION).not_to be nil
   end
 
-  it '#initialize' do
-    RpgLevel.new
+  describe '#initialize' do
+    it 'should be initialized' do
+      RpgLevel.new
+    end
   end
 
   describe '#generate_necessary_exps' do
@@ -81,22 +83,24 @@ describe RpgLevel do
     end
   end
 
+  describe '#min_level' do
+    it 'should be' do
+      rpg_level = RpgLevel.new(min_level: 2)
+      expect(rpg_level.min_level).to eq 2
+    end
+  end
+
   describe '#max_level' do
     it 'should be' do
       rpg_level = RpgLevel.new
       rpg_level.define_exp_table(5) {|level:, **rest| level}
       expect(rpg_level.max_level).to eq 5
     end
+
+    it 'should be effected of the min_level' do
+      rpg_level = RpgLevel.new(min_level: 2)
+      rpg_level.define_exp_table_from_array([1, 1, 1])
+      expect(rpg_level.max_level).to eq 5
+    end
   end
-
-  #describe '#min_level' do
-  #  let (:rpg_level) {
-  #    RpgLevel.new
-  #  }
-
-  #  it 'should be' do
-  #    rpg_level.define_exp_table {|level:, **rest| level}
-  #    expect(rpg_level.min_level).to eq 1
-  #  end
-  #end
 end

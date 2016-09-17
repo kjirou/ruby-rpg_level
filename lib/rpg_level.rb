@@ -4,8 +4,8 @@ require 'rpg_level/version'
 class RpgLevel
   attr_reader(:min_level, :necessary_exps)
 
-  def initialize
-    @min_level = 1
+  def initialize(min_level: 1)
+    @min_level = min_level
 
     # Necessary exps from the @min_level
     @necessary_exps = []
