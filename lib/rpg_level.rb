@@ -23,7 +23,7 @@ class RpgLevel
   private
 
   def generate_necessary_exps(max_level)
-    raise ArgumentError 'max_level less than min_level' if max_level < @min_level
+    raise ArgumentError.new('max_level is less than min_level') if max_level < @min_level
 
     generated_exps = []
     memo = {}
