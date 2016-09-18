@@ -74,11 +74,22 @@ class RpgLevel
     level == max_level
   end
 
-  def obtain_exp(exp)
+  def alter_exp(exp_delta)
+    raise ArgumentError.new('exp_delta is not a integer') unless exp_delta.is_a?(Integer)
     before_exp = @exp
-    change_exp_result = change_exp(@exp + exp)
+    change_exp_result = change_exp(@exp + exp_delta)
     self.class.generate_exp_change_result(
       before_exp, @exp, change_exp_result[:before_level], change_exp_result[:after_level])
+  end
+
+  def obtain_exp(increase_of_exp)
+    raise ArgumentError.new('increase_of_exp is less than 0') if increase_of_exp < 0
+    alter_exp(increase_of_exp)
+  end
+
+  def drain_exp(decrease_of_exp)
+    raise ArgumentError.new('decrease_of_exp is less than 0') if decrease_of_exp < 0
+    alter_exp(-decrease_of_exp)
   end
 
   private

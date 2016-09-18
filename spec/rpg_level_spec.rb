@@ -262,13 +262,13 @@ describe RpgLevel do
       end
     end
 
-    describe '#obtain_exp' do
-      it 'should be' do
+    describe '#alter_exp' do
+      it 'can increase exp' do
         rpg_level = RpgLevel.new
         rpg_level.define_exp_table_from_array([2])
 
-        obtained = rpg_level.obtain_exp(1)
-        expect(obtained).to eq({
+        altered = rpg_level.alter_exp(1)
+        expect(altered).to eq({
           before_exp: 0,
           after_exp: 1,
           exp_delta: 1,
@@ -285,8 +285,8 @@ describe RpgLevel do
           obtained_exp_for_next: 1
         })
 
-        obtained = rpg_level.obtain_exp(1)
-        expect(obtained).to eq({
+        altered = rpg_level.alter_exp(1)
+        expect(altered).to eq({
           before_exp: 1,
           after_exp: 2,
           exp_delta: 1,
@@ -304,10 +304,52 @@ describe RpgLevel do
         })
       end
 
+      it 'can decrease exp' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([2])
+        rpg_level.alter_exp(2)
+
+        altered = rpg_level.alter_exp(-1)
+        expect(altered).to eq({
+          before_exp: 2,
+          after_exp: 1,
+          exp_delta: -1,
+          before_level: 2,
+          after_level: 1,
+          level_delta: -1,
+          is_leveling_up: false,
+          is_leveling_down: true
+        })
+        expect(rpg_level.level_status).to eq({
+          level: 1,
+          next_necessary_exp: 2,
+          lacking_exp_for_next: 1,
+          obtained_exp_for_next: 1
+        })
+
+        altered = rpg_level.alter_exp(-1)
+        expect(altered).to eq({
+          before_exp: 1,
+          after_exp: 0,
+          exp_delta: -1,
+          before_level: 1,
+          after_level: 1,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+        expect(rpg_level.level_status).to eq({
+          level: 1,
+          next_necessary_exp: 2,
+          lacking_exp_for_next: 2,
+          obtained_exp_for_next: 0
+        })
+      end
+
       it 'should obtain exp with multiple leveling up at a time' do
         rpg_level = RpgLevel.new
         rpg_level.define_exp_table_from_array([1, 2, 4])
-        obtained = rpg_level.obtain_exp(6)
+        obtained = rpg_level.alter_exp(6)
         expect(obtained).to eq({
           before_exp: 0,
           after_exp: 6,
@@ -323,10 +365,55 @@ describe RpgLevel do
       it 'should cut exp that exceeds the max exp' do
         rpg_level = RpgLevel.new
         rpg_level.define_exp_table_from_array([1])
+        rpg_level.alter_exp(1)
+        expect(rpg_level.exp).to eq 1
+        rpg_level.alter_exp(1)
+        expect(rpg_level.exp).to eq 1
+      end
+
+      it 'should not update exp to less than 0' do
+        rpg_level = RpgLevel.new
+        expect(rpg_level.exp).to eq 0
+        rpg_level.alter_exp(-1)
+        expect(rpg_level.exp).to eq 0
+      end
+
+      it 'should raise a ArgumentError if exp_delta is not a Integer' do
+        rpg_level = RpgLevel.new
+        expect {rpg_level.alter_exp(1.0)}.to raise_error ArgumentError
+      end
+    end
+
+    describe '#obtain_exp' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        expect(rpg_level.exp).to eq 0
+        obtained = rpg_level.obtain_exp(1)
+        expect(rpg_level.exp).to eq 1
+        expect(obtained).to be_instance_of Hash
+      end
+
+      it 'should raise a ArgumentError if increase_of_exp is less than 0' do
+        rpg_level = RpgLevel.new
+        expect {rpg_level.obtain_exp(-1)}.to raise_error ArgumentError
+      end
+    end
+
+    describe '#drain_exp' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
         rpg_level.obtain_exp(1)
         expect(rpg_level.exp).to eq 1
-        rpg_level.obtain_exp(1)
-        expect(rpg_level.exp).to eq 1
+        drained = rpg_level.drain_exp(1)
+        expect(rpg_level.exp).to eq 0
+        expect(drained).to be_instance_of Hash
+      end
+
+      it 'should raise a ArgumentError if decrease_of_exp is less than 0' do
+        rpg_level = RpgLevel.new
+        expect {rpg_level.drain_exp(-1)}.to raise_error ArgumentError
       end
     end
   end
