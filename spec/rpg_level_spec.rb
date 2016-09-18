@@ -1,4 +1,5 @@
 require 'spec_helper'
+# TODO: How to write `binding.pry` directly without this requirement?
 require 'pry'
 
 describe RpgLevel do
@@ -200,7 +201,7 @@ describe RpgLevel do
     end
 
     describe 'status cashing' do
-      # TODO: How to rewrite this test like the following logic:
+      # TODO: How to rewrite this test like the following logic?:
       #       "#generate_status_of_current_level is called only once, even #level_status is called on many times"
       it 'should not generate status if its exp has no change' do
         rpg_level = RpgLevel.new(min_level: 2)
