@@ -151,41 +151,89 @@ describe RpgLevel do
     end
   end
 
-  describe '#generate_status_of_current_level' do
-    it 'should be' do
-      rpg_level = RpgLevel.new(min_level: 2)
-      rpg_level.define_exp_table_from_array([1, 2])
+  describe '#level_status and #level' do
+    context '`min_level=2, necessary_exps=[1, 2]` definition' do
+      let(:rpg_level) {
+        rpg_level = RpgLevel.new(min_level: 2)
+        rpg_level.define_exp_table_from_array([1, 2])
+        rpg_level
+      }
 
-      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
-        level: 2,
-        next_necessary_exp: 1,
-        lacking_exp_for_next: 1,
-        obtained_exp_for_next: 0
-      })
+      it 'should generate status of 0 exp' do
+        expect(rpg_level.level_status).to eq({
+          level: 2,
+          next_necessary_exp: 1,
+          lacking_exp_for_next: 1,
+          obtained_exp_for_next: 0
+        })
+      end
 
-      rpg_level.instance_variable_set(:@exp, 1)
-      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
-        level: 3,
-        next_necessary_exp: 2,
-        lacking_exp_for_next: 2,
-        obtained_exp_for_next: 0
-      })
+      it 'should generate status of 1 exp' do
+        rpg_level.instance_variable_set(:@exp, 1)
+        expect(rpg_level.level_status).to eq({
+          level: 3,
+          next_necessary_exp: 2,
+          lacking_exp_for_next: 2,
+          obtained_exp_for_next: 0
+        })
+      end
 
-      rpg_level.instance_variable_set(:@exp, 2)
-      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
-        level: 3,
-        next_necessary_exp: 2,
-        lacking_exp_for_next: 1,
-        obtained_exp_for_next: 1
-      })
+      it 'should generate status of 2 exp' do
+        rpg_level.instance_variable_set(:@exp, 2)
+        expect(rpg_level.level_status).to eq({
+          level: 3,
+          next_necessary_exp: 2,
+          lacking_exp_for_next: 1,
+          obtained_exp_for_next: 1
+        })
+      end
 
-      rpg_level.instance_variable_set(:@exp, 3)
-      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
-        level: 4,
-        next_necessary_exp: nil,
-        lacking_exp_for_next: nil,
-        obtained_exp_for_next: nil
-      })
+      it 'should generate status of 3 exp' do
+        rpg_level.instance_variable_set(:@exp, 3)
+        expect(rpg_level.level_status).to eq({
+          level: 4,
+          next_necessary_exp: nil,
+          lacking_exp_for_next: nil,
+          obtained_exp_for_next: nil
+        })
+      end
+    end
+
+    describe 'status cashing' do
+      # TODO: How to rewrite this test like the following logic:
+      #       "#generate_status_of_current_level is called only once, even #level_status is called on many times"
+      it 'should not generate status if its exp has no change' do
+        rpg_level = RpgLevel.new(min_level: 2)
+        rpg_level.define_exp_table_from_array([1, 2])
+        expect(rpg_level.instance_variable_get(:@cached_current_level_status)).to eq nil
+
+        rpg_level.level_status
+        expect(rpg_level.instance_variable_get(:@cached_current_level_status)).not_to eq nil
+
+        before_object_id = rpg_level.instance_variable_get(:@cached_current_level_status).object_id
+
+        rpg_level.level_status
+        expect(rpg_level.instance_variable_get(:@cached_current_level_status).object_id).to eq before_object_id
+      end
+
+      it 'returns duplicated hash always' do
+        rpg_level = RpgLevel.new(min_level: 2)
+        rpg_level.define_exp_table_from_array([1, 2])
+        first_result = rpg_level.level_status
+        second_result = rpg_level.level_status
+        expect(first_result).not_to be second_result
+      end
+
+      it '#level' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        expect(rpg_level.level).to eq 1
+
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        rpg_level.instance_variable_set(:@exp, 1)
+        expect(rpg_level.level).to eq 2
+      end
     end
   end
 end

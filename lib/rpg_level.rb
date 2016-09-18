@@ -8,6 +8,9 @@ class RpgLevel
     @min_level = min_level
     # Necessary exps from the @min_level
     @necessary_exps = []
+    # A cache of the #generate_status_of_current_level calculation
+    # It is too heavy for access to #level_status like a static value
+    @cached_current_level_status = nil
   end
 
   def define_exp_table_from_array(necessary_exps)
@@ -32,6 +35,7 @@ class RpgLevel
     @min_level + @necessary_exps.length
   end
 
+  # TODO: Rename to #is_allowed_level?
   def has_level?(level)
     level.between?(@min_level, max_level)
   end
@@ -54,6 +58,15 @@ class RpgLevel
 
   def max_exp
     calculate_total_necessary_exp(@min_level, max_level)
+  end
+
+  def level_status
+    @cached_current_level_status = generate_status_of_current_level() unless @cached_current_level_status
+    @cached_current_level_status.dup
+  end
+
+  def level
+    level_status[:level]
   end
 
   private
