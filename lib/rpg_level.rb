@@ -70,7 +70,9 @@ class RpgLevel
     level_status[:level]
   end
 
-  # TODO: is_max_level?
+  def is_reached_max_level?
+    level == max_level
+  end
 
   def obtain_exp(exp)
     before_exp = @exp

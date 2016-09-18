@@ -239,6 +239,17 @@ describe RpgLevel do
       end
     end
 
+    describe '#is_reached_max_level?' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        expect(rpg_level.is_reached_max_level?).to eq true
+
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        expect(rpg_level.is_reached_max_level?).to eq false
+      end
+    end
+
     describe '#change_exp' do
       it 'should regenerate the @cached_current_level_status' do
         rpg_level = RpgLevel.new
