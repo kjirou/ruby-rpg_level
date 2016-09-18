@@ -59,6 +59,9 @@ describe RpgLevel do
       rpg_level.define_exp_table_from_array([1, 2, 3])
       expect(rpg_level.necessary_exps.length).to eq 3
       expect(rpg_level.necessary_exps.frozen?).to eq true
+      expect {rpg_level.define_exp_table_from_array([1.0])}.to raise_error ArgumentError
+      expect {rpg_level.define_exp_table_from_array([-1])}.to raise_error ArgumentError
+      expect {rpg_level.define_exp_table_from_array([1, 1.0])}.to raise_error ArgumentError
     end
   end
 
