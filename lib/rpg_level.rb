@@ -92,6 +92,11 @@ class RpgLevel
     alter_exp(-decrease_of_exp)
   end
 
+  def clear_exp
+    change_exp(0)
+    nil
+  end
+
   private
 
   def self.generate_exp_change_result(before_exp, after_exp, before_level, after_level)

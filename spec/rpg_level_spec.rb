@@ -416,5 +416,16 @@ describe RpgLevel do
         expect {rpg_level.drain_exp(-1)}.to raise_error ArgumentError
       end
     end
+
+    describe '#clear_exp' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        rpg_level.alter_exp(1)
+        expect(rpg_level.exp).to eq 1
+        rpg_level.clear_exp
+        expect(rpg_level.exp).to eq 0
+      end
+    end
   end
 end
