@@ -124,4 +124,27 @@ describe RpgLevel do
       expect(rpg_level.find_necessary_exp_by_level(8)).to eq nil
     end
   end
+
+  describe '#calculate_total_necessary_exp' do
+    it 'should be' do
+      rpg_level = RpgLevel.new(min_level: 2)
+      rpg_level.define_exp_table_from_array([1, 1, 1])
+      expect(rpg_level.calculate_total_necessary_exp(2, 5)).to eq 3
+      expect(rpg_level.calculate_total_necessary_exp(3, 5)).to eq 3
+      expect(rpg_level.calculate_total_necessary_exp(2, 4)).to eq 2
+      expect(rpg_level.calculate_total_necessary_exp(3, 3)).to eq 1
+      expect(rpg_level.calculate_total_necessary_exp(2, 2)).to eq 0
+      expect {rpg_level.calculate_total_necessary_exp(3, 2)}.to raise_error ArgumentError
+      expect {rpg_level.calculate_total_necessary_exp(0, 5)}.to raise_error ArgumentError
+      expect {rpg_level.calculate_total_necessary_exp(2, 6)}.to raise_error ArgumentError
+    end
+  end
+
+  describe '#max_exp' do
+    it 'should be' do
+      rpg_level = RpgLevel.new
+      rpg_level.define_exp_table_from_array([1, 1])
+      expect(rpg_level.max_exp).to eq 2
+    end
+  end
 end

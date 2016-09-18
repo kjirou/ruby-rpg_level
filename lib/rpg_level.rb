@@ -11,6 +11,7 @@ class RpgLevel
   end
 
   def define_exp_table_from_array(necessary_exps)
+    # TODO: integer >= 0 validation
     @necessary_exps = necessary_exps
     @necessary_exps.freeze
   end
@@ -31,6 +32,21 @@ class RpgLevel
     return nil unless level.between?(@min_level, max_level)
     return 0 if level == @min_level
     @necessary_exps[level - @min_level - 1]
+  end
+
+  def calculate_total_necessary_exp(from_level, to_level)
+    raise ArgumentError.new('from_level is greater than to_level') if from_level > to_level
+    # TODO: Generalize the `between(min, max)` logic
+    raise ArgumentError.new('from_level is out of range') unless from_level.between?(@min_level, max_level)
+    raise ArgumentError.new('to_level is out of range') unless to_level.between?(@min_level, max_level)
+
+    (from_level..to_level).inject(0) do |result, level|
+      result + find_necessary_exp_by_level(level)
+    end
+  end
+
+  def max_exp
+    calculate_total_necessary_exp(@min_level, max_level)
   end
 
   private
