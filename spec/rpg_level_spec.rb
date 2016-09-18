@@ -428,4 +428,228 @@ describe RpgLevel do
       expect(rpg_level.exp).to eq 0
     end
   end
+
+  describe '#obtain_exp_by_level' do
+    it 'should raise ArgumentError' do
+      rpg_level = RpgLevel.new
+      expect {rpg_level.obtain_exp_by_level(1.0, :omitted)}.to raise_error ArgumentError
+      expect {rpg_level.obtain_exp_by_level(-1, :omitted)}.to raise_error ArgumentError
+      expect {rpg_level.obtain_exp_by_level(1, :invalid_mode)}.to raise_error ArgumentError
+    end
+
+    context 'fraction_mode = :omitted' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([4, 8])
+        rpg_level.obtain_exp(3)
+
+        obtained = rpg_level.obtain_exp_by_level(1, :omitted)
+        expect(obtained).to eq({
+          before_exp: 3,
+          after_exp: 4,
+          exp_delta: 1,
+          before_level: 1,
+          after_level: 2,
+          level_delta: 1,
+          is_leveling_up: true,
+          is_leveling_down: false
+        })
+
+        obtained = rpg_level.obtain_exp_by_level(1, :omitted)
+        expect(obtained).to eq({
+          before_exp: 4,
+          after_exp: 12,
+          exp_delta: 8,
+          before_level: 2,
+          after_level: 3,
+          level_delta: 1,
+          is_leveling_up: true,
+          is_leveling_down: false
+        })
+
+        obtained = rpg_level.obtain_exp_by_level(1, :omitted)
+        expect(obtained).to eq({
+          before_exp: 12,
+          after_exp: 12,
+          exp_delta: 0,
+          before_level: 3,
+          after_level: 3,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+      end
+
+      it 'should omit exp fraction at multiple leveling up' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([3, 3, 3])
+        rpg_level.obtain_exp(2)
+        rpg_level.obtain_exp_by_level(2, :omitted)
+        expect(rpg_level.exp).to eq 6
+      end
+    end
+
+    context 'fraction_mode = :inherited' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([4, 8])
+        rpg_level.obtain_exp(3)
+
+        obtained = rpg_level.obtain_exp_by_level(1, :inherited)
+        expect(obtained).to eq({
+          before_exp: 3,
+          after_exp: 7,
+          exp_delta: 4,
+          before_level: 1,
+          after_level: 2,
+          level_delta: 1,
+          is_leveling_up: true,
+          is_leveling_down: false
+        })
+
+        obtained = rpg_level.obtain_exp_by_level(1, :inherited)
+        expect(obtained).to eq({
+          before_exp: 7,
+          after_exp: 12,
+          exp_delta: 5,
+          before_level: 2,
+          after_level: 3,
+          level_delta: 1,
+          is_leveling_up: true,
+          is_leveling_down: false
+        })
+
+        obtained = rpg_level.obtain_exp_by_level(1, :inherited)
+        expect(obtained).to eq({
+          before_exp: 12,
+          after_exp: 12,
+          exp_delta: 0,
+          before_level: 3,
+          after_level: 3,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+      end
+
+      it 'should inherit exp fraction at multiple leveling up' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([3, 3, 3])
+        rpg_level.obtain_exp(2)
+        rpg_level.obtain_exp_by_level(2, :inherited)
+        expect(rpg_level.exp).to eq 8
+      end
+
+      it 'should cut over inherited fraction exp' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([8, 8, 4])
+        rpg_level.obtain_exp(7)
+        rpg_level.obtain_exp_by_level(2, :inherited)
+        expect(rpg_level.exp).to eq 19
+      end
+    end
+  end
+
+  describe '#drain_exp_by_level' do
+    it 'should raise ArgumentError' do
+      rpg_level = RpgLevel.new
+      expect {rpg_level.drain_exp_by_level(1.0, :omitted)}.to raise_error ArgumentError
+      expect {rpg_level.drain_exp_by_level(-1, :omitted)}.to raise_error ArgumentError
+      expect {rpg_level.drain_exp_by_level(1, :invalid_mode)}.to raise_error ArgumentError
+    end
+
+    context 'fraction_mode = :omitted' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([4, 8])
+        rpg_level.obtain_exp(11)
+
+        drained = rpg_level.drain_exp_by_level(1, :omitted)
+        expect(rpg_level.exp).to eq 0
+        expect(drained).to eq({
+          before_exp: 11,
+          after_exp: 0,
+          exp_delta: -11,
+          before_level: 2,
+          after_level: 1,
+          level_delta: -1,
+          is_leveling_up: false,
+          is_leveling_down: true
+        })
+
+        drained = rpg_level.drain_exp_by_level(1, :omitted)
+        expect(rpg_level.exp).to eq 0
+        expect(drained).to eq({
+          before_exp: 0,
+          after_exp: 0,
+          exp_delta: 0,
+          before_level: 1,
+          after_level: 1,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+      end
+
+      it 'should omit exp fraction at multiple leveling down' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([3, 3, 3, 3])
+        rpg_level.obtain_exp(11)
+        rpg_level.drain_exp_by_level(2, :omitted)
+        expect(rpg_level.exp).to eq 3
+      end
+    end
+
+    context 'fraction_mode = :full' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([4, 8])
+        rpg_level.obtain_exp(5)
+
+        drained = rpg_level.drain_exp_by_level(1, :full)
+        expect(drained).to eq({
+          before_exp: 5,
+          after_exp: 3,
+          exp_delta: -2,
+          before_level: 2,
+          after_level: 1,
+          level_delta: -1,
+          is_leveling_up: false,
+          is_leveling_down: true
+        })
+
+        drained = rpg_level.drain_exp_by_level(1, :full)
+        expect(drained).to eq({
+          before_exp: 3,
+          after_exp: 0,
+          exp_delta: -3,
+          before_level: 1,
+          after_level: 1,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+
+        drained = rpg_level.drain_exp_by_level(1, :full)
+        expect(drained).to eq({
+          before_exp: 0,
+          after_exp: 0,
+          exp_delta: 0,
+          before_level: 1,
+          after_level: 1,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+      end
+
+      it 'should keep exp fraction at multiple leveling down' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([3, 3, 3, 3])
+        rpg_level.obtain_exp(10)
+        rpg_level.drain_exp_by_level(2, :full)
+        expect(rpg_level.exp).to eq 5
+      end
+    end
+  end
 end

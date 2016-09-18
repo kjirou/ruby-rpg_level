@@ -97,6 +97,60 @@ class RpgLevel
     nil
   end
 
+  # fraction_mode
+  #   :omitted
+  #     ex ) Lv3(15/20) + Lv1 => Lv4( 0/25) - As a Rogue-like games
+  #   :inherited
+  #     ex1) Lv3(15/20) + Lv1 => Lv4(15/25)
+  #     ex2) Lv3(15/20) + Lv1 => Lv4(14/15)
+  def obtain_exp_by_level(increase_of_level, fraction_mode)
+    raise ArgumentError.new('increase_of_level is not a integer') unless increase_of_level.is_a?(Integer)
+    raise ArgumentError.new('increase_of_level is less than 0') if increase_of_level < 0
+    raise ArgumentError.new('fraction_mode is invalid') unless [:omitted, :inherited].include?(fraction_mode)
+
+    from_level = level
+    to_level = cut_level_into_valid_range(from_level + increase_of_level)
+
+    exp_delta = case fraction_mode
+    when :omitted then
+      calculate_total_necessary_exp(min_level, to_level) - @exp
+    when :inherited then
+      next_necessary_exp_after_leveling_up = find_necessary_exp_by_level(to_level + 1)
+      inherited_fraction_exp = if next_necessary_exp_after_leveling_up
+        [level_status[:obtained_exp_for_next], next_necessary_exp_after_leveling_up - 1].min
+      else
+        0
+      end
+      calculate_total_necessary_exp(min_level, to_level) + inherited_fraction_exp - @exp
+    end
+
+    alter_exp(exp_delta)
+  end
+
+  # fraction_mode
+  #   :omitted
+  #     ex) Lv3(15/20) - Lv1 => Lv2( 0/10) - As a Wiz-like games
+  #   :full
+  #     ex) Lv3(15/20) - Lv1 => Lv2(14/15) - As a Rogue-like games
+  def drain_exp_by_level(decrease_of_level, fraction_mode)
+    raise ArgumentError.new('decrease_of_level is not a integer') unless decrease_of_level.is_a?(Integer)
+    raise ArgumentError.new('decrease_of_level is less than 0') if decrease_of_level < 0
+    raise ArgumentError.new('fraction_mode is invalid') unless [:omitted, :full].include?(fraction_mode)
+
+    from_level = level
+    to_level = cut_level_into_valid_range(from_level - decrease_of_level)
+
+    exp_delta = case fraction_mode
+    when :omitted then
+      calculate_total_necessary_exp(min_level, to_level) - @exp
+    when :full then
+      to_level = [to_level + 1, from_level].min
+      calculate_total_necessary_exp(min_level, to_level) - @exp - 1
+    end
+
+    alter_exp(exp_delta)
+  end
+
   private
 
   def self.generate_exp_change_result(before_exp, after_exp, before_level, after_level)
@@ -165,8 +219,8 @@ class RpgLevel
     @cached_current_level_status = CLEARED_CACHED_CURRENT_LEVEL_STATUS
   end
 
-  def cut_exp_into_valid_range(exp)
-    [[exp, max_exp].min, 0].max
+  def cut_exp_into_valid_range(suggested_exp)
+    [[suggested_exp, max_exp].min, 0].max
   end
 
   def change_exp(exp)
@@ -177,5 +231,9 @@ class RpgLevel
       before_level: before_level,
       after_level: level
     }
+  end
+
+  def cut_level_into_valid_range(suggested_level)
+    [[suggested_level, max_level].min, @min_level].max
   end
 end
