@@ -35,21 +35,20 @@ class RpgLevel
     @min_level + @necessary_exps.length
   end
 
-  # TODO: Rename to #is_allowed_level?
-  def has_level?(level)
+  def is_allowed_level?(level)
     level.between?(@min_level, max_level)
   end
 
   def find_necessary_exp_by_level(level)
-    return nil unless has_level?(level)
+    return nil unless is_allowed_level?(level)
     return 0 if level == @min_level
     @necessary_exps[level - @min_level - 1]
   end
 
   def calculate_total_necessary_exp(from_level, to_level)
     raise ArgumentError.new('from_level is greater than to_level') if from_level > to_level
-    raise ArgumentError.new('from_level is out of range') unless has_level?(from_level)
-    raise ArgumentError.new('to_level is out of range') unless has_level?(to_level)
+    raise ArgumentError.new('from_level is out of range') unless is_allowed_level?(from_level)
+    raise ArgumentError.new('to_level is out of range') unless is_allowed_level?(to_level)
 
     (from_level..to_level).inject(0) do |result, level|
       result + find_necessary_exp_by_level(level)
