@@ -238,5 +238,85 @@ describe RpgLevel do
         expect(rpg_level.level).to eq 2
       end
     end
+
+    describe '#change_exp' do
+      it 'should regenerate the @cached_current_level_status' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        rpg_level.level_status
+        before_cache = rpg_level.instance_variable_get(:@cached_current_level_status)
+        rpg_level.send(:change_exp, 0)
+        after_cache = rpg_level.instance_variable_get(:@cached_current_level_status)
+        expect(before_cache).not_to be after_cache
+      end
+    end
+
+    describe '#obtain_exp' do
+      it 'should be' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([2])
+
+        obtained = rpg_level.obtain_exp(1)
+        expect(obtained).to eq({
+          before_exp: 0,
+          after_exp: 1,
+          exp_delta: 1,
+          before_level: 1,
+          after_level: 1,
+          level_delta: 0,
+          is_leveling_up: false,
+          is_leveling_down: false
+        })
+        expect(rpg_level.level_status).to eq({
+          level: 1,
+          next_necessary_exp: 2,
+          lacking_exp_for_next: 1,
+          obtained_exp_for_next: 1
+        })
+
+        obtained = rpg_level.obtain_exp(1)
+        expect(obtained).to eq({
+          before_exp: 1,
+          after_exp: 2,
+          exp_delta: 1,
+          before_level: 1,
+          after_level: 2,
+          level_delta: 1,
+          is_leveling_up: true,
+          is_leveling_down: false
+        })
+        expect(rpg_level.level_status).to eq({
+          level: 2,
+          next_necessary_exp: nil,
+          lacking_exp_for_next: nil,
+          obtained_exp_for_next: nil
+        })
+      end
+
+      it 'should obtain exp with multiple leveling up at a time' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1, 2, 4])
+        obtained = rpg_level.obtain_exp(6)
+        expect(obtained).to eq({
+          before_exp: 0,
+          after_exp: 6,
+          exp_delta: 6,
+          before_level: 1,
+          after_level: 3,
+          level_delta: 2,
+          is_leveling_up: true,
+          is_leveling_down: false
+        })
+      end
+
+      it 'should cut exp that exceeds the max exp' do
+        rpg_level = RpgLevel.new
+        rpg_level.define_exp_table_from_array([1])
+        rpg_level.obtain_exp(1)
+        expect(rpg_level.exp).to eq 1
+        rpg_level.obtain_exp(1)
+        expect(rpg_level.exp).to eq 1
+      end
+    end
   end
 end

@@ -1,6 +1,8 @@
 require 'rpg_level/version'
 
 class RpgLevel
+  CLEARED_CACHED_CURRENT_LEVEL_STATUS = nil
+
   attr_reader(:exp, :min_level, :necessary_exps)
 
   def initialize(min_level: 1)
@@ -10,7 +12,7 @@ class RpgLevel
     @necessary_exps = []
     # A cache of the #generate_status_of_current_level calculation
     # It is too heavy for access to #level_status like a static value
-    @cached_current_level_status = nil
+    @cached_current_level_status = CLEARED_CACHED_CURRENT_LEVEL_STATUS
   end
 
   def define_exp_table_from_array(necessary_exps)
@@ -68,7 +70,29 @@ class RpgLevel
     level_status[:level]
   end
 
+  # TODO: is_max_level?
+
+  def obtain_exp(exp)
+    before_exp = @exp
+    change_exp_result = change_exp(@exp + exp)
+    self.class.generate_exp_change_result(
+      before_exp, @exp, change_exp_result[:before_level], change_exp_result[:after_level])
+  end
+
   private
+
+  def self.generate_exp_change_result(before_exp, after_exp, before_level, after_level)
+    {
+      before_exp: before_exp,
+      after_exp: after_exp,
+      exp_delta: after_exp - before_exp,
+      before_level: before_level,
+      after_level: after_level,
+      level_delta: after_level - before_level,
+      is_leveling_up: after_level > before_level,
+      is_leveling_down: after_level < before_level
+    }
+  end
 
   def generate_necessary_exps(max_level)
     generated_exps = []
@@ -116,6 +140,24 @@ class RpgLevel
       next_necessary_exp: next_necessary_exp,
       lacking_exp_for_next: lacking_exp_for_next,
       obtained_exp_for_next: obtained_exp_for_next
+    }
+  end
+
+  def clear_cached_current_level_status
+    @cached_current_level_status = CLEARED_CACHED_CURRENT_LEVEL_STATUS
+  end
+
+  def cut_exp_into_valid_range(exp)
+    [[exp, max_exp].min, 0].max
+  end
+
+  def change_exp(exp)
+    before_level = level
+    @exp = cut_exp_into_valid_range(exp)
+    clear_cached_current_level_status
+    {
+      before_level: before_level,
+      after_level: level
     }
   end
 end
