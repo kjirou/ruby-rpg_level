@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["kjirou"]
   spec.email         = ["sorenariblog@gmail.com"]
 
-  spec.summary       = 'Manage experience points with levels.'
-  spec.description   = 'Manage experience points with levels.'
+  spec.summary       = 'A Level/EXP manager for RPGs.'
+  spec.description   = 'Manage the Level/EXP that is known as the most commonly growth system of role-playing games.'
   spec.homepage      = 'https://github.com/kjirou/ruby-rpg_level'
   spec.license       = "MIT"
 
