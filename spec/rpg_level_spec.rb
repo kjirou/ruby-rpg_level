@@ -223,8 +223,10 @@ describe RpgLevel do
         second_result = rpg_level.level_status
         expect(first_result).not_to be second_result
       end
+    end
 
-      it '#level' do
+    describe '#level' do
+      it 'should be' do
         rpg_level = RpgLevel.new
         rpg_level.define_exp_table_from_array([1])
         expect(rpg_level.level).to eq 1
