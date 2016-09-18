@@ -150,4 +150,42 @@ describe RpgLevel do
       expect(rpg_level.max_exp).to eq 2
     end
   end
+
+  describe '#generate_status_of_current_level' do
+    it 'should be' do
+      rpg_level = RpgLevel.new(min_level: 2)
+      rpg_level.define_exp_table_from_array([1, 2])
+
+      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
+        level: 2,
+        next_necessary_exp: 1,
+        lacking_exp_for_next: 1,
+        obtained_exp_for_next: 0
+      })
+
+      rpg_level.instance_variable_set(:@exp, 1)
+      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
+        level: 3,
+        next_necessary_exp: 2,
+        lacking_exp_for_next: 2,
+        obtained_exp_for_next: 0
+      })
+
+      rpg_level.instance_variable_set(:@exp, 2)
+      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
+        level: 3,
+        next_necessary_exp: 2,
+        lacking_exp_for_next: 1,
+        obtained_exp_for_next: 1
+      })
+
+      rpg_level.instance_variable_set(:@exp, 3)
+      expect(rpg_level.send(:generate_status_of_current_level)).to eq({
+        level: 4,
+        next_necessary_exp: nil,
+        lacking_exp_for_next: nil,
+        obtained_exp_for_next: nil
+      })
+    end
+  end
 end

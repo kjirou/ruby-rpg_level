@@ -74,4 +74,36 @@ class RpgLevel
       exp
     end
   end
+
+  def guess_level_from_necessary_exps_index(index)
+    @min_level + index + 1
+  end
+
+  def generate_status_of_current_level
+    current_level = @min_level
+    next_necessary_exp = nil
+    total_necessary_exp = 0
+    obtained_exp_for_next = nil
+    lacking_exp_for_next = nil
+
+    @necessary_exps.each_with_index do |necessary_exp, index|
+      total_necessary_exp += necessary_exp
+
+      if @exp < total_necessary_exp
+        next_necessary_exp = necessary_exp
+        lacking_exp_for_next = total_necessary_exp - @exp
+        obtained_exp_for_next = next_necessary_exp - lacking_exp_for_next
+        break
+      end
+
+      current_level = guess_level_from_necessary_exps_index(index)
+    end
+
+    {
+      level: current_level,
+      next_necessary_exp: next_necessary_exp,
+      lacking_exp_for_next: lacking_exp_for_next,
+      obtained_exp_for_next: obtained_exp_for_next
+    }
+  end
 end
