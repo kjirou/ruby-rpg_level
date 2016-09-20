@@ -1,6 +1,4 @@
 require 'spec_helper'
-# TODO: How to write `binding.pry` directly without this requirement?
-require 'pry'
 
 describe RpgLevel do
   it 'has a version number' do
